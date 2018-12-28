@@ -89,6 +89,8 @@ def fill_layer(state, layer, filt_mask=0x5806b4a2d16c):
             else:
                 fill_layer(lfsr(new_state), layer+1, filt_mask)
     else:
+        ## Christian Mayer: 
+        ## Recursion base case reached (we have guessed all bits of the LFSR).
         test(state)
 
 
