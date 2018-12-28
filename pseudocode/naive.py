@@ -48,7 +48,21 @@ for _ in range(len(masks)):
     test_states.append(state)
     state = lfsr(state)
 
+
 def fill_layer(state, layer, filt_mask=0x5806b4a2d16c):
+    
+    ## Christian Mayer:
+    ## Suppose, you have guessed the 20 LFSR bits, given a single keystream bit.
+    ## These are the exact positions: 2,3,5,6,8,12,14,15,17,21,23,26,28,29,31,33,34,43,44,46.
+    ## Have a look at Figure 11 of https://www.usenix.org/system/files/conference/usenixsecurity12/sec12-final95.pdf
+    ## Now, you read the next keystream bit. The LFSR has shifted by one bit now. But the guesses from the previous
+    ## keystream bit are still valid. So many of the bits are already guessed, you only need to guess the bits that
+    ## are not yet guessed. This is exactly what a layer is for. The layer is a series of zeros and ones that you have already
+    ## guessed (and some holes that you need to guess in subsequent layers). As each layer uses the guesses from previous
+    ## layers, the function is recursive (using the lower layers for the higher layers). The variable filt_mask simply stores
+    ## a "1" if the layer has a hole (i.e., we have not guessed it, yet). After 9 layers, we have guessed all bits of the
+    ## LFSR state. This is one possible solution.
+    
     if layer < len(masks):
         for fill in range(0, 1<<bits[layer]):
             new_state = state | expand(masks[layer], fill)
@@ -66,6 +80,17 @@ def fill_layer(state, layer, filt_mask=0x5806b4a2d16c):
     else:
         test(state)
 
+## Christian Mayer:
+## The main idea of the guess-and-determine algorithm is the following:
+## Assume we know the keystream (because we are the attacker and have access to the sender).
+## Now, we try to "guess" the internall state of the LFSR that has generated this keystream.
+## It's basically like an inverse 2-level filter function (that's why the inverse f() function is
+## defined in hitag2.py). We guess the internal state bit by bit (from the keystream). Because 20 bits
+## of the LFSR are responsible for a single keystream bit, there are MANY internal states of the LFSR that would have
+## generated this keystream bit. But we know the keystream bit result, so basically half of the internal states of
+## the LFSR cannot have produced this result (they would produce the bit: 1-result). This "halving" of the search
+## space is the main idea of the guess-and-determine algorithm.
+        
 if __name__ == "__main__":
     testing = True
     fill_layer(0, 0)
