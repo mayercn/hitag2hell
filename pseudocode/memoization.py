@@ -1,5 +1,14 @@
 from tabled import *
 
+## Christian Mayer:
+## The guess-and-determine algorithm "guesses" LFSR bits and determines whether
+## these guesses were right by calculating the two-level filter function f() using
+## the mini functions f_a(), f_b(), and f_c(). The algorithm performs countless such 
+## function computations for countless different inputs. Many of these inputs to the
+## mini functions are redundant (we have already computed a solution in previous executions).
+## The memoization algorithm stores outputs for given inputs to the mini function executions
+## to avoid redundancy overhead.
+
 def generate_memos(depth,
                    sub_masks=[0x00000000006c,
                               0x00000000d100,
