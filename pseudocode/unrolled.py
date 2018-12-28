@@ -1,4 +1,13 @@
 from naive import *
+
+## Christian Mayer:
+## This is the fill_layer() function of the naive.py module with one modification:
+## The recursive function calls are unrolled. Why? Because recursion is inefficient
+## (especially in cheap hardware such as the automatic car opening key) and the paper is all about computational speed. 
+## Further reading: https://blogs.msdn.microsoft.com/ericlippert/2005/08/01/recursion-part-two-unrolling-a-recursive-function-with-an-explicit-stack/
+
+
+
 def fill_layer(a=None, b=None, filt_mask=0x5806b4a2d16c):
   for i0 in range(1<<bits[0]):
     state0 = expand(masks[0], i0)
