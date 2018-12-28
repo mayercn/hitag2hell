@@ -1,6 +1,17 @@
 from maskgen import *
 from hitag2 import *
 
+## Christian Mayer:
+## The main idea of the guess-and-determine algorithm is the following:
+## Assume we know the keystream (because we are the attacker and have access to the sender).
+## Now, we try to "guess" the internall state of the LFSR that has generated this keystream.
+## It's basically like an inverse 2-level filter function (that's why the inverse f() function is
+## defined in hitag2.py). We guess the internal state bit by bit (from the keystream). Because 20 bits
+## of the LFSR are responsible for a single keystream bit, there are MANY internal states of the LFSR that would have
+## generated this keystream bit. But we know the keystream bit result, so basically half of the internal states of
+## the LFSR cannot have produced this result (they would produce the bit: 1-result). This "halving" of the search
+## space is the main idea of the guess-and-determine algorithm.
+
 def popcount(x):
     return "{0:0b}".format(x).count('1')
 
@@ -80,16 +91,7 @@ def fill_layer(state, layer, filt_mask=0x5806b4a2d16c):
     else:
         test(state)
 
-## Christian Mayer:
-## The main idea of the guess-and-determine algorithm is the following:
-## Assume we know the keystream (because we are the attacker and have access to the sender).
-## Now, we try to "guess" the internall state of the LFSR that has generated this keystream.
-## It's basically like an inverse 2-level filter function (that's why the inverse f() function is
-## defined in hitag2.py). We guess the internal state bit by bit (from the keystream). Because 20 bits
-## of the LFSR are responsible for a single keystream bit, there are MANY internal states of the LFSR that would have
-## generated this keystream bit. But we know the keystream bit result, so basically half of the internal states of
-## the LFSR cannot have produced this result (they would produce the bit: 1-result). This "halving" of the search
-## space is the main idea of the guess-and-determine algorithm.
+
         
 if __name__ == "__main__":
     testing = True
